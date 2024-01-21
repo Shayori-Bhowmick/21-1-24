@@ -1,0 +1,35 @@
+// ImageUploadComponent.js
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { uploadImage } from '../redux/actions/imageActions';
+
+const ImageUploadComponent = () => {
+  const dispatch = useDispatch();
+  const [file, setFile] = useState(null);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleUpload = () => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('title', title);
+    formData.append('description', description);
+
+    dispatch(uploadImage(formData));
+  };
+
+  return (
+    <div>
+      <input type="file" onChange={handleFileChange} />
+      <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+      <button onClick={handleUpload}>Upload Image</button>
+    </div>
+  );
+};
+
+export default ImageUploadComponent;
