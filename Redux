@@ -1,0 +1,141 @@
+//Redux Actions (authActions.js):
+// authActions.js
+export const loginUser = (userData) => {
+  return async (dispatch) => {
+    try {
+      // Perform API call to login endpoint
+      // ...
+
+      // Assuming a successful response returns user data
+      dispatch({ type: 'LOGIN_SUCCESS', payload: userData });
+    } catch (error) {
+      console.error(error);
+      dispatch({ type: 'LOGIN_FAILURE', payload: 'Login failed' });
+    }
+  };
+};
+
+export const signupUser = (userData) => {
+  return async (dispatch) => {
+    try {
+      // Perform API call to signup endpoint
+      // ...
+
+      // Assuming a successful response returns user data
+      dispatch({ type: 'SIGNUP_SUCCESS', payload: userData });
+    } catch (error) {
+      console.error(error);
+      dispatch({ type: 'SIGNUP_FAILURE', payload: 'Signup failed' });
+    }
+  };
+};
+
+export const logoutUser = () => {
+  return { type: 'LOGOUT' };
+};
+//rEACT rEDUCERS(aUTH.JS)
+// authReducer.js
+const initialState = {
+  user: null,
+  error: null,
+};
+
+const authReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'LOGIN_SUCCESS':
+    case 'SIGNUP_SUCCESS':
+      return { ...state, user: action.payload, error: null };
+
+    case 'LOGIN_FAILURE':
+    case 'SIGNUP_FAILURE':
+      return { ...state, user: null, error: action.payload };
+
+    case 'LOGOUT':
+      return { ...state, user: null, error: null };
+
+    default:
+      return state;
+  }
+};
+
+export default authReducer;
+//Root Reducer (rootReducer.js):
+// rootReducer.js
+import { combineReducers } from 'redux';
+import authReducer from './authReducer';
+import imageReducer from './imageReducer'; // Assuming you have an imageReducer
+
+const rootReducer = combineReducers({
+  auth: authReducer,
+  image: imageReducer,
+});
+
+export default rootReducer;
+//rEDUX sTORE
+// store.js
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk'; // Assuming you are using redux-thunk middleware
+import rootReducer from './reducers/rootReducer';
+
+const store = createStore(rootReducer, applyMiddleware(thunk));
+
+export default store;
+//cONNECTING COMPONENTS FOR LOGIN AND SIGN UP
+// LoginComponent.js
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../redux/actions/authActions';
+
+const LoginComponent = () => {
+  const dispatch = useDispatch();
+  const error = useSelector((state) => state.auth.error);
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    const userData = { username, password };
+    dispatch(loginUser(userData));
+  };
+
+  return (
+    <div>
+      <h2>Login</h2>
+      <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={handleLogin}>Login</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+    </div>
+  );
+};
+
+export default LoginComponent;
+// SignupComponent.js
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { signupUser } from '../redux/actions/authActions';
+
+const SignupComponent = () => {
+  const dispatch = useDispatch();
+  const error = useSelector((state) => state.auth.error);
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignup = () => {
+    const userData = { username, password };
+    dispatch(signupUser(userData));
+  };
+
+  return (
+    <div>
+      <h2>Signup</h2>
+      <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={handleSignup}>Signup</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+    </div>
+  );
+};
+
+export default SignupComponent;
