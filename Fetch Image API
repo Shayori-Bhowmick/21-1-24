@@ -1,0 +1,12 @@
+// imageController.js
+const Image = require('../models/Image');
+
+exports.fetchImages = async (req, res) => {
+  try {
+    const images = await Image.find();
+    res.json(images);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
